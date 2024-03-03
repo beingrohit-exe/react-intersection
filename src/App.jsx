@@ -1,35 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from 'react'
+import { useEffect } from 'react'
+import styled from 'styled-components';
+import Posts from './posts';
+import { baseAxios } from './axios';
+import ListItem from './listItem';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+
+  const [posts, setPosts] = useState([]);
+
+  React.useEffect(() => {
+      baseAxios.get("/posts/?skip=0&limit=10")
+          .then(response => {
+              setPosts(response.data.posts);
+          }).catch(e => {
+              console.error(e);
+          })
+  }, []);
+
+  const titleStyle = {
+    fontSize: '40px',
+    letterSpacing: '1px',
+    color: 'rgba(255, 255, 255, 0.8)',
+    textAlign: 'center'
+  }
+
+  const handleItemVisible = (itemId) => {
+    console.log(itemId);
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <Wrapper>
+      <h1 style={titleStyle}>Posts</h1>
+      <ListItem items={posts} onItemsVisible={handleItemVisible} />
+    </Wrapper>
   )
 }
+
+const Wrapper = styled.main`
+width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  margin: 20px 0;
+`;
 
 export default App
